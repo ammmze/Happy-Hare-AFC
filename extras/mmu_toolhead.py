@@ -31,7 +31,7 @@ class MmuToolHead(toolhead.ToolHead, object):
     EXTRUDER_ONLY_ON_GEAR   = 2
     GEAR_SYNCED_TO_EXTRUDER = 3
 
-    def __init__(self, config, mmu, homing_extruder):
+    def __init__(self, config, mmu, homing_extruder, has_selector=True, gear_stepper="stepper_mmu_gear"):
         self.printer = config.get_printer()
         self.reactor = self.printer.get_reactor()
         self.all_mcus = [m for n, m in self.printer.lookup_objects(module='mcu')]
@@ -115,7 +115,7 @@ class MmuToolHead(toolhead.ToolHead, object):
         
         # Create MMU kinematics
         try:
-            self.kin = MmuKinematics(self, config)
+            self.kin = MmuKinematics(self, config, has_selector=has_selector, gear_stepper=gear_stepper)
             self.all_gear_rail_steppers = self.kin.rails[1].get_steppers()
         except config.error as e:
             raise
@@ -354,12 +354,12 @@ class MmuToolHead(toolhead.ToolHead, object):
 # MMU Kinematics class
 # (loosely based on corexy.py)
 class MmuKinematics:
-    def __init__(self, toolhead, config):
+    def __init__(self, toolhead, config, has_selector=True, gear_stepper="stepper_mmu_gear"):
         self.printer = config.get_printer()
         self.toolhead = toolhead
 
         # Setup "axis" rails
-        self.axes = [('x', 'selector', True), ('y', 'gear', False)]
+        self.axes = [('x', 'stepper_mmu_selector', True), ('y', gear_stepper, False)]
         self.rails = [MmuLookupMultiRail(config.getsection('stepper_mmu_' + s), need_position_minmax=mm, default_position_endstop=0.) for a, s, mm in self.axes]
         for rail, axis in zip(self.rails, 'xy'):
             rail.setup_itersolve('cartesian_stepper_alloc', axis.encode())

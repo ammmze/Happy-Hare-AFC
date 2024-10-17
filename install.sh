@@ -32,6 +32,11 @@ KLIPPER_LOGS_HOME="${HOME}/printer_data/logs"
 OLD_KLIPPER_CONFIG_HOME="${HOME}/klipper_config"
 SENSORS_SECTION="FILAMENT SENSORS"
 LED_SECTION="MMU OPTIONAL NEOPIXEL"
+SELECTOR_SECTION="SELECTOR STEPPER"
+SERVOS_SECTION="SERVOS"
+SELECTOR_SERVO_SECTION="SELECTOR SERVO"
+GANTRY_SERVO_SECTION="OPTIONAL GANTRY SERVO"
+ANY_SECTION="^# .* \-\{3,\}$"
 
 if [ "$IS_MIPS" -eq 1 ]; then
     KLIPPER_HOME="/usr/share/klipper"
@@ -51,124 +56,233 @@ declare -A PIN 2>/dev/null || {
 # Pins for original EASY-BRD and EASY-BRD with Seed Studio XIAO RP2040
 # Note: uart pin is shared on original EASY-BRD (with different uart addresses)
 #
-PIN[EASY-BRD,gear_uart_pin]="PA8";                         PIN[EASY-BRD-RP2040,gear_uart_pin]="gpio6"
-PIN[EASY-BRD,gear_step_pin]="PA4";                         PIN[EASY-BRD-RP2040,gear_step_pin]="gpio27"
-PIN[EASY-BRD,gear_dir_pin]="PA10";                         PIN[EASY-BRD-RP2040,gear_dir_pin]="gpio28"
-PIN[EASY-BRD,gear_enable_pin]="PA2";                       PIN[EASY-BRD-RP2040,gear_enable_pin]="gpio26"
-PIN[EASY-BRD,gear_diag_pin]="";                            PIN[EASY-BRD-RP2040,gear_diag_pin]=""
-PIN[EASY-BRD,selector_uart_pin]="PA8";                     PIN[EASY-BRD-RP2040,selector_uart_pin]="gpio6"
-PIN[EASY-BRD,selector_step_pin]="PA9";                     PIN[EASY-BRD-RP2040,selector_step_pin]="gpio7"
-PIN[EASY-BRD,selector_dir_pin]="PB8";                      PIN[EASY-BRD-RP2040,selector_dir_pin]="gpio0"
-PIN[EASY-BRD,selector_enable_pin]="PA11";                  PIN[EASY-BRD-RP2040,selector_enable_pin]="gpio29"
-PIN[EASY-BRD,selector_diag_pin]="PA7";                     PIN[EASY-BRD-RP2040,selector_diag_pin]="gpio2"
-PIN[EASY-BRD,selector_endstop_pin]="PB9";                  PIN[EASY-BRD-RP2040,selector_endstop_pin]="gpio1"
-PIN[EASY-BRD,servo_pin]="PA5";                             PIN[EASY-BRD-RP2040,servo_pin]="gpio4"
-PIN[EASY-BRD,encoder_pin]="PA6";                           PIN[EASY-BRD-RP2040,encoder_pin]="gpio3"
-PIN[EASY-BRD,neopixel_pin]="";                             PIN[EASY-BRD-RP2040,neopixel_pin]=""
-PIN[EASY-BRD,gate_sensor_pin]="PA6";                       PIN[EASY-BRD-RP2040,gate_sensor_pin]="gpio3";
-PIN[EASY-BRD,pre_gate_0_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_0_pin]="";
-PIN[EASY-BRD,pre_gate_1_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_1_pin]="";
-PIN[EASY-BRD,pre_gate_2_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_2_pin]="";
-PIN[EASY-BRD,pre_gate_3_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_3_pin]="";
-PIN[EASY-BRD,pre_gate_4_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_4_pin]="";
-PIN[EASY-BRD,pre_gate_5_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_5_pin]="";
-PIN[EASY-BRD,pre_gate_6_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_6_pin]="";
-PIN[EASY-BRD,pre_gate_7_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_7_pin]="";
-PIN[EASY-BRD,pre_gate_8_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_8_pin]="";
-PIN[EASY-BRD,pre_gate_9_pin]="";                           PIN[EASY-BRD-RP2040,pre_gate_9_pin]="";
-PIN[EASY-BRD,pre_gate_10_pin]="";                          PIN[EASY-BRD-RP2040,pre_gate_10_pin]="";
-PIN[EASY-BRD,pre_gate_11_pin]="";                          PIN[EASY-BRD-RP2040,pre_gate_11_pin]="";
+PIN[TA_EASY-BRD,gear_uart_pin]="PA8";                         PIN[TA_EASY-BRD-RP2040,gear_uart_pin]="gpio6"
+PIN[TA_EASY-BRD,gear_step_pin]="PA4";                         PIN[TA_EASY-BRD-RP2040,gear_step_pin]="gpio27"
+PIN[TA_EASY-BRD,gear_dir_pin]="PA10";                         PIN[TA_EASY-BRD-RP2040,gear_dir_pin]="gpio28"
+PIN[TA_EASY-BRD,gear_enable_pin]="PA2";                       PIN[TA_EASY-BRD-RP2040,gear_enable_pin]="gpio26"
+PIN[TA_EASY-BRD,gear_diag_pin]="";                            PIN[TA_EASY-BRD-RP2040,gear_diag_pin]=""
+PIN[TA_EASY-BRD,selector_uart_pin]="PA8";                     PIN[TA_EASY-BRD-RP2040,selector_uart_pin]="gpio6"
+PIN[TA_EASY-BRD,selector_step_pin]="PA9";                     PIN[TA_EASY-BRD-RP2040,selector_step_pin]="gpio7"
+PIN[TA_EASY-BRD,selector_dir_pin]="PB8";                      PIN[TA_EASY-BRD-RP2040,selector_dir_pin]="gpio0"
+PIN[TA_EASY-BRD,selector_enable_pin]="PA11";                  PIN[TA_EASY-BRD-RP2040,selector_enable_pin]="gpio29"
+PIN[TA_EASY-BRD,selector_diag_pin]="PA7";                     PIN[TA_EASY-BRD-RP2040,selector_diag_pin]="gpio2"
+PIN[TA_EASY-BRD,selector_endstop_pin]="PB9";                  PIN[TA_EASY-BRD-RP2040,selector_endstop_pin]="gpio1"
+PIN[TA_EASY-BRD,servo_pin]="PA5";                             PIN[TA_EASY-BRD-RP2040,servo_pin]="gpio4"
+PIN[TA_EASY-BRD,encoder_pin]="PA6";                           PIN[TA_EASY-BRD-RP2040,encoder_pin]="gpio3"
+PIN[TA_EASY-BRD,neopixel_pin]="";                             PIN[TA_EASY-BRD-RP2040,neopixel_pin]=""
+PIN[TA_EASY-BRD,gate_sensor_pin]="PA6";                       PIN[TA_EASY-BRD-RP2040,gate_sensor_pin]="gpio3";
+PIN[TA_EASY-BRD,pre_gate_0_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_0_pin]="";
+PIN[TA_EASY-BRD,pre_gate_1_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_1_pin]="";
+PIN[TA_EASY-BRD,pre_gate_2_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_2_pin]="";
+PIN[TA_EASY-BRD,pre_gate_3_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_3_pin]="";
+PIN[TA_EASY-BRD,pre_gate_4_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_4_pin]="";
+PIN[TA_EASY-BRD,pre_gate_5_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_5_pin]="";
+PIN[TA_EASY-BRD,pre_gate_6_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_6_pin]="";
+PIN[TA_EASY-BRD,pre_gate_7_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_7_pin]="";
+PIN[TA_EASY-BRD,pre_gate_8_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_8_pin]="";
+PIN[TA_EASY-BRD,pre_gate_9_pin]="";                           PIN[TA_EASY-BRD-RP2040,pre_gate_9_pin]="";
+PIN[TA_EASY-BRD,pre_gate_10_pin]="";                          PIN[TA_EASY-BRD-RP2040,pre_gate_10_pin]="";
+PIN[TA_EASY-BRD,pre_gate_11_pin]="";                          PIN[TA_EASY-BRD-RP2040,pre_gate_11_pin]="";
 
 # Pins for Mellow EASY-BRD with CANbus (original v1.x and v2)
 #
-PIN[MELLOW-EASY-BRD-CAN,gear_uart_pin]="gpio9";            PIN[MELLOW-EASY-BRD-CANv2,gear_uart_pin]="gpio9";
-PIN[MELLOW-EASY-BRD-CAN,gear_step_pin]="gpio7";            PIN[MELLOW-EASY-BRD-CANv2,gear_step_pin]="gpio7";
-PIN[MELLOW-EASY-BRD-CAN,gear_dir_pin]="gpio8";             PIN[MELLOW-EASY-BRD-CANv2,gear_dir_pin]="gpio8";
-PIN[MELLOW-EASY-BRD-CAN,gear_enable_pin]="gpio6";          PIN[MELLOW-EASY-BRD-CANv2,gear_enable_pin]="gpio6";
-PIN[MELLOW-EASY-BRD-CAN,gear_diag_pin]="gpio23";           PIN[MELLOW-EASY-BRD-CANv2,gear_diag_pin]="";               # v2: Dup with encoder (gpio15)
-PIN[MELLOW-EASY-BRD-CAN,selector_uart_pin]="gpio0";        PIN[MELLOW-EASY-BRD-CANv2,selector_uart_pin]="gpio2";
-PIN[MELLOW-EASY-BRD-CAN,selector_step_pin]="gpio2";        PIN[MELLOW-EASY-BRD-CANv2,selector_step_pin]="gpio4";
-PIN[MELLOW-EASY-BRD-CAN,selector_dir_pin]="gpio1";         PIN[MELLOW-EASY-BRD-CANv2,selector_dir_pin]="gpio3";
-PIN[MELLOW-EASY-BRD-CAN,selector_enable_pin]="gpio3";      PIN[MELLOW-EASY-BRD-CANv2,selector_enable_pin]="gpio5";
-PIN[MELLOW-EASY-BRD-CAN,selector_diag_pin]="gpio22";       PIN[MELLOW-EASY-BRD-CANv2,selector_diag_pin]="gpio20";     # v2: Dup with endstop (gpio20)
-PIN[MELLOW-EASY-BRD-CAN,selector_endstop_pin]="gpio20";	   PIN[MELLOW-EASY-BRD-CANv2,selector_endstop_pin]="gpio20";  # Endstop
-PIN[MELLOW-EASY-BRD-CAN,servo_pin]="gpio21";		   PIN[MELLOW-EASY-BRD-CANv2,servo_pin]="gpio21";             # Servo
-PIN[MELLOW-EASY-BRD-CAN,encoder_pin]="gpio15";		   PIN[MELLOW-EASY-BRD-CANv2,encoder_pin]="gpio15";           # Encoder
-PIN[MELLOW-EASY-BRD-CAN,neopixel_pin]="gpio14";		   PIN[MELLOW-EASY-BRD-CANv2,neopixel_pin]="gpio14";          # v1: Extra  / v2: RGB
-PIN[MELLOW-EASY-BRD-CAN,gate_sensor_pin]="gpio15";	   PIN[MELLOW-EASY-BRD-CANv2,gate_sensor_pin]="gpio15";       # Encoder (Alt)
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_0_pin]="gpio10";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_0_pin]="gpio24";        # v1: Exp 5  / v2: Exp 3
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_1_pin]="gpio26";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_1_pin]="gpio22";        # v1: Exp 6  / v2: Exp 4
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_2_pin]="gpio11";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_2_pin]="gpio25";        # v1: Exp 7  / v2: Exp 5
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_3_pin]="gpio27";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_3_pin]="gpio23";        # v1: Exp 8  / v2: Exp 6
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_4_pin]="gpio12";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_4_pin]="gpio13";        # v1: Exp 9  / v2: Exp 7
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_5_pin]="gpio28";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_5_pin]="gpio26";        # v1: Exp 10 / v2: Exp 8
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_6_pin]="gpio24";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_6_pin]="gpio12";        # v1: Exp 11 / v2: Exp 9
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_7_pin]="gpio29";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_7_pin]="gpio27";        # v1: Exp 12 / v2: Exp 10
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_8_pin]="gpio13";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_8_pin]="gpio11";        # v1: Exp 13 / v2: Exp 11
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_9_pin]="gpio25";	   PIN[MELLOW-EASY-BRD-CANv2,pre_gate_9_pin]="gpio28";        # v1: Exp 14 / v2: Exp 12
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_10_pin]="";               PIN[MELLOW-EASY-BRD-CANv2,pre_gate_10_pin]="gpio10";       #              v2: Exp 13
-PIN[MELLOW-EASY-BRD-CAN,pre_gate_11_pin]="";               PIN[MELLOW-EASY-BRD-CANv2,pre_gate_11_pin]="gpio29";       #              v2: Exp 14
+PIN[TA_MELLOW-EASY-BRD-CAN,gear_uart_pin]="gpio9";            PIN[TA_MELLOW-EASY-BRD-CANv2,gear_uart_pin]="gpio9";
+PIN[TA_MELLOW-EASY-BRD-CAN,gear_step_pin]="gpio7";            PIN[TA_MELLOW-EASY-BRD-CANv2,gear_step_pin]="gpio7";
+PIN[TA_MELLOW-EASY-BRD-CAN,gear_dir_pin]="gpio8";             PIN[TA_MELLOW-EASY-BRD-CANv2,gear_dir_pin]="gpio8";
+PIN[TA_MELLOW-EASY-BRD-CAN,gear_enable_pin]="gpio6";          PIN[TA_MELLOW-EASY-BRD-CANv2,gear_enable_pin]="gpio6";
+PIN[TA_MELLOW-EASY-BRD-CAN,gear_diag_pin]="gpio23";           PIN[TA_MELLOW-EASY-BRD-CANv2,gear_diag_pin]="";               # v2: Dup with encoder (gpio15)
+PIN[TA_MELLOW-EASY-BRD-CAN,selector_uart_pin]="gpio0";        PIN[TA_MELLOW-EASY-BRD-CANv2,selector_uart_pin]="gpio2";
+PIN[TA_MELLOW-EASY-BRD-CAN,selector_step_pin]="gpio2";        PIN[TA_MELLOW-EASY-BRD-CANv2,selector_step_pin]="gpio4";
+PIN[TA_MELLOW-EASY-BRD-CAN,selector_dir_pin]="gpio1";         PIN[TA_MELLOW-EASY-BRD-CANv2,selector_dir_pin]="gpio3";
+PIN[TA_MELLOW-EASY-BRD-CAN,selector_enable_pin]="gpio3";      PIN[TA_MELLOW-EASY-BRD-CANv2,selector_enable_pin]="gpio5";
+PIN[TA_MELLOW-EASY-BRD-CAN,selector_diag_pin]="gpio22";       PIN[TA_MELLOW-EASY-BRD-CANv2,selector_diag_pin]="gpio20";     # v2: Dup with endstop (gpio20)
+PIN[TA_MELLOW-EASY-BRD-CAN,selector_endstop_pin]="gpio20";	   PIN[TA_MELLOW-EASY-BRD-CANv2,selector_endstop_pin]="gpio20";  # Endstop
+PIN[TA_MELLOW-EASY-BRD-CAN,servo_pin]="gpio21";		   PIN[TA_MELLOW-EASY-BRD-CANv2,servo_pin]="gpio21";             # Servo
+PIN[TA_MELLOW-EASY-BRD-CAN,encoder_pin]="gpio15";		   PIN[TA_MELLOW-EASY-BRD-CANv2,encoder_pin]="gpio15";           # Encoder
+PIN[TA_MELLOW-EASY-BRD-CAN,neopixel_pin]="gpio14";		   PIN[TA_MELLOW-EASY-BRD-CANv2,neopixel_pin]="gpio14";          # v1: Extra  / v2: RGB
+PIN[TA_MELLOW-EASY-BRD-CAN,gate_sensor_pin]="gpio15";	   PIN[TA_MELLOW-EASY-BRD-CANv2,gate_sensor_pin]="gpio15";       # Encoder (Alt)
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_0_pin]="gpio10";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_0_pin]="gpio24";        # v1: Exp 5  / v2: Exp 3
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_1_pin]="gpio26";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_1_pin]="gpio22";        # v1: Exp 6  / v2: Exp 4
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_2_pin]="gpio11";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_2_pin]="gpio25";        # v1: Exp 7  / v2: Exp 5
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_3_pin]="gpio27";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_3_pin]="gpio23";        # v1: Exp 8  / v2: Exp 6
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_4_pin]="gpio12";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_4_pin]="gpio13";        # v1: Exp 9  / v2: Exp 7
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_5_pin]="gpio28";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_5_pin]="gpio26";        # v1: Exp 10 / v2: Exp 8
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_6_pin]="gpio24";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_6_pin]="gpio12";        # v1: Exp 11 / v2: Exp 9
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_7_pin]="gpio29";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_7_pin]="gpio27";        # v1: Exp 12 / v2: Exp 10
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_8_pin]="gpio13";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_8_pin]="gpio11";        # v1: Exp 13 / v2: Exp 11
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_9_pin]="gpio25";	   PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_9_pin]="gpio28";        # v1: Exp 14 / v2: Exp 12
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_10_pin]="";               PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_10_pin]="gpio10";       #              v2: Exp 13
+PIN[TA_MELLOW-EASY-BRD-CAN,pre_gate_11_pin]="";               PIN[TA_MELLOW-EASY-BRD-CANv2,pre_gate_11_pin]="gpio29";       #              v2: Exp 14
 
 # Pins for Fysetc Burrows ERB board (original v1 and v2)
 #
-PIN[ERB,gear_uart_pin]="gpio20";                           PIN[ERBv2,gear_uart_pin]="gpio11";
-PIN[ERB,gear_step_pin]="gpio10";                           PIN[ERBv2,gear_step_pin]="gpio10";
-PIN[ERB,gear_dir_pin]="gpio9";                             PIN[ERBv2,gear_dir_pin]="gpio9";
-PIN[ERB,gear_enable_pin]="gpio8";                          PIN[ERBv2,gear_enable_pin]="gpio8";
-PIN[ERB,gear_diag_pin]="gpio13";                           PIN[ERBv2,gear_diag_pin]="gpio13";
-PIN[ERB,selector_uart_pin]="gpio17";                       PIN[ERBv2,selector_uart_pin]="gpio17";
-PIN[ERB,selector_step_pin]="gpio16";                       PIN[ERBv2,selector_step_pin]="gpio16";
-PIN[ERB,selector_dir_pin]="gpio15";                        PIN[ERBv2,selector_dir_pin]="gpio15";
-PIN[ERB,selector_enable_pin]="gpio14";                     PIN[ERBv2,selector_enable_pin]="gpio14";
-PIN[ERB,selector_diag_pin]="gpio19";                       PIN[ERBv2,selector_diag_pin]="gpio19";
-PIN[ERB,selector_endstop_pin]="gpio24";                    PIN[ERBv2,selector_endstop_pin]="gpio24";
-PIN[ERB,servo_pin]="gpio23";                               PIN[ERBv2,servo_pin]="gpio23";
-PIN[ERB,encoder_pin]="gpio22";                             PIN[ERBv2,encoder_pin]="gpio22";
-PIN[ERB,neopixel_pin]="gpio21";                            PIN[ERBv2,neopixel_pin]="gpio21";
-PIN[ERB,gate_sensor_pin]="gpio22";                         PIN[ERBv2,gate_sensor_pin]="gpio25";  # Hall Effect
-PIN[ERB,pre_gate_0_pin]="gpio0";                           PIN[ERBv2,pre_gate_0_pin]="gpio12";
-PIN[ERB,pre_gate_1_pin]="gpio1";                           PIN[ERBv2,pre_gate_1_pin]="gpio18";
-PIN[ERB,pre_gate_2_pin]="gpio2";                           PIN[ERBv2,pre_gate_2_pin]="gpio2";
-PIN[ERB,pre_gate_3_pin]="gpio3";                           PIN[ERBv2,pre_gate_3_pin]="gpio3";
-PIN[ERB,pre_gate_4_pin]="gpio4";                           PIN[ERBv2,pre_gate_4_pin]="gpio4";
-PIN[ERB,pre_gate_5_pin]="gpio5";                           PIN[ERBv2,pre_gate_5_pin]="gpio5";
-PIN[ERB,pre_gate_6_pin]="gpio6";                           PIN[ERBv2,pre_gate_6_pin]="gpio6";
-PIN[ERB,pre_gate_7_pin]="gpio7";                           PIN[ERBv2,pre_gate_7_pin]="gpio7";
-PIN[ERB,pre_gate_8_pin]="gpio26";                          PIN[ERBv2,pre_gate_8_pin]="gpio26";
-PIN[ERB,pre_gate_9_pin]="gpio27";                          PIN[ERBv2,pre_gate_9_pin]="gpio27";
-PIN[ERB,pre_gate_10_pin]="gpio28";                         PIN[ERBv2,pre_gate_10_pin]="gpio28";
-PIN[ERB,pre_gate_11_pin]="gpio29";                         PIN[ERBv2,pre_gate_11_pin]="gpio29";
+PIN[TA_ERB,gear_uart_pin]="gpio20";                           PIN[TA_ERBv2,gear_uart_pin]="gpio11";
+PIN[TA_ERB,gear_step_pin]="gpio10";                           PIN[TA_ERBv2,gear_step_pin]="gpio10";
+PIN[TA_ERB,gear_dir_pin]="gpio9";                             PIN[TA_ERBv2,gear_dir_pin]="gpio9";
+PIN[TA_ERB,gear_enable_pin]="gpio8";                          PIN[TA_ERBv2,gear_enable_pin]="gpio8";
+PIN[TA_ERB,gear_diag_pin]="gpio13";                           PIN[TA_ERBv2,gear_diag_pin]="gpio13";
+PIN[TA_ERB,selector_uart_pin]="gpio17";                       PIN[TA_ERBv2,selector_uart_pin]="gpio17";
+PIN[TA_ERB,selector_step_pin]="gpio16";                       PIN[TA_ERBv2,selector_step_pin]="gpio16";
+PIN[TA_ERB,selector_dir_pin]="gpio15";                        PIN[TA_ERBv2,selector_dir_pin]="gpio15";
+PIN[TA_ERB,selector_enable_pin]="gpio14";                     PIN[TA_ERBv2,selector_enable_pin]="gpio14";
+PIN[TA_ERB,selector_diag_pin]="gpio19";                       PIN[TA_ERBv2,selector_diag_pin]="gpio19";
+PIN[TA_ERB,selector_endstop_pin]="gpio24";                    PIN[TA_ERBv2,selector_endstop_pin]="gpio24";
+PIN[TA_ERB,servo_pin]="gpio23";                               PIN[TA_ERBv2,servo_pin]="gpio23";
+PIN[TA_ERB,encoder_pin]="gpio22";                             PIN[TA_ERBv2,encoder_pin]="gpio22";
+PIN[TA_ERB,neopixel_pin]="gpio21";                            PIN[TA_ERBv2,neopixel_pin]="gpio21";
+PIN[TA_ERB,gate_sensor_pin]="gpio22";                         PIN[TA_ERBv2,gate_sensor_pin]="gpio25";  # Hall Effect
+PIN[TA_ERB,pre_gate_0_pin]="gpio0";                           PIN[TA_ERBv2,pre_gate_0_pin]="gpio12";
+PIN[TA_ERB,pre_gate_1_pin]="gpio1";                           PIN[TA_ERBv2,pre_gate_1_pin]="gpio18";
+PIN[TA_ERB,pre_gate_2_pin]="gpio2";                           PIN[TA_ERBv2,pre_gate_2_pin]="gpio2";
+PIN[TA_ERB,pre_gate_3_pin]="gpio3";                           PIN[TA_ERBv2,pre_gate_3_pin]="gpio3";
+PIN[TA_ERB,pre_gate_4_pin]="gpio4";                           PIN[TA_ERBv2,pre_gate_4_pin]="gpio4";
+PIN[TA_ERB,pre_gate_5_pin]="gpio5";                           PIN[TA_ERBv2,pre_gate_5_pin]="gpio5";
+PIN[TA_ERB,pre_gate_6_pin]="gpio6";                           PIN[TA_ERBv2,pre_gate_6_pin]="gpio6";
+PIN[TA_ERB,pre_gate_7_pin]="gpio7";                           PIN[TA_ERBv2,pre_gate_7_pin]="gpio7";
+PIN[TA_ERB,pre_gate_8_pin]="gpio26";                          PIN[TA_ERBv2,pre_gate_8_pin]="gpio26";
+PIN[TA_ERB,pre_gate_9_pin]="gpio27";                          PIN[TA_ERBv2,pre_gate_9_pin]="gpio27";
+PIN[TA_ERB,pre_gate_10_pin]="gpio28";                         PIN[TA_ERBv2,pre_gate_10_pin]="gpio28";
+PIN[TA_ERB,pre_gate_11_pin]="gpio29";                         PIN[TA_ERBv2,pre_gate_11_pin]="gpio29";
 
 # Pins for BTT MMB board (gear on motor1, selector on motor2, endstop on STP11, optional gate sensor on STP1 if no gear DIAG use)
 # Note BTT MMB v1.1 Board switched gear_enable and pre_gate_1 pins
 #
-PIN[MMB10,gear_uart_pin]="PA10";                           PIN[MMB11,gear_uart_pin]="PA10";       # M1
-PIN[MMB10,gear_step_pin]="PB15";                           PIN[MMB11,gear_step_pin]="PB15";
-PIN[MMB10,gear_dir_pin]="PB14";                            PIN[MMB11,gear_dir_pin]="PB14";
-PIN[MMB10,gear_enable_pin]="PA8";                          PIN[MMB11,gear_enable_pin]="PB8";
-PIN[MMB10,gear_diag_pin]="PA3";                            PIN[MMB11,gear_diag_pin]="PA3";        # Aka STP1
-PIN[MMB10,selector_uart_pin]="PC7";                        PIN[MMB11,selector_uart_pin]="PC7";    # M2
-PIN[MMB10,selector_step_pin]="PD2";                        PIN[MMB11,selector_step_pin]="PD2";
-PIN[MMB10,selector_dir_pin]="PB13";                        PIN[MMB11,selector_dir_pin]="PB13";
-PIN[MMB10,selector_enable_pin]="PD1";                      PIN[MMB11,selector_enable_pin]="PD1";
-PIN[MMB10,selector_diag_pin]="PA4";                        PIN[MMB11,selector_diag_pin]="PA4";    # Aka STP2
-PIN[MMB10,selector_endstop_pin]="PB2";                     PIN[MMB11,selector_endstop_pin]="PB2"; # STP11
-PIN[MMB10,servo_pin]="PA0";                                PIN[MMB11,servo_pin]="PA0";
-PIN[MMB10,encoder_pin]="PA1";                              PIN[MMB11,encoder_pin]="PA1";
-PIN[MMB10,neopixel_pin]="PA2";                             PIN[MMB11,neopixel_pin]="PA2";
-PIN[MMB10,gate_sensor_pin]="PA3";                          PIN[MMB11,gate_sensor_pin]="PA3";      # STP1 (if not DIAG)
-PIN[MMB10,pre_gate_0_pin]="PB9";                           PIN[MMB11,pre_gate_0_pin]="PB9";       # STP3
-PIN[MMB10,pre_gate_1_pin]="PB8";                           PIN[MMB11,pre_gate_1_pin]="PA8";       # STP4
-PIN[MMB10,pre_gate_2_pin]="PC15";                          PIN[MMB11,pre_gate_2_pin]="PC15";      # STP5
-PIN[MMB10,pre_gate_3_pin]="PC13";                          PIN[MMB11,pre_gate_3_pin]="PC13";      # STP6
-PIN[MMB10,pre_gate_4_pin]="PC14";                          PIN[MMB11,pre_gate_4_pin]="PC14";      # STP7
-PIN[MMB10,pre_gate_5_pin]="PB12";                          PIN[MMB11,pre_gate_5_pin]="PB12";      # STP8
-PIN[MMB10,pre_gate_6_pin]="PB11";                          PIN[MMB11,pre_gate_6_pin]="PB11";      # STP9
-PIN[MMB10,pre_gate_7_pin]="PB10";                          PIN[MMB11,pre_gate_7_pin]="PB10";      # STP10
-PIN[MMB10,pre_gate_8_pin]="";                              PIN[MMB11,pre_gate_8_pin]="";
-PIN[MMB10,pre_gate_9_pin]="";                              PIN[MMB11,pre_gate_9_pin]="";
-PIN[MMB10,pre_gate_10_pin]="";                             PIN[MMB11,pre_gate_10_pin]="";
-PIN[MMB10,pre_gate_11_pin]="";                             PIN[MMB11,pre_gate_11_pin]="";
+PIN[TA_MMB10,gear_uart_pin]="MCU_M1_UART";
+PIN[TA_MMB10,gear_step_pin]="MCU_M1_STEP";
+PIN[TA_MMB10,gear_dir_pin]="MCU_M1_DIR";
+PIN[TA_MMB10,gear_enable_pin]="MCU_M1_EN";
+PIN[TA_MMB10,gear_diag_pin]="PA3";
+PIN[TA_MMB10,selector_uart_pin]="MCU_M2_UART";
+PIN[TA_MMB10,selector_step_pin]="MCU_M2_STEP";
+PIN[TA_MMB10,selector_dir_pin]="MCU_M2_DIR";
+PIN[TA_MMB10,selector_enable_pin]="MCU_M2_EN";
+PIN[TA_MMB10,selector_diag_pin]="PA4";
+PIN[TA_MMB10,selector_endstop_pin]="MCU_STP11";
+PIN[TA_MMB10,servo_pin]="MCU_MOT";
+PIN[TA_MMB10,encoder_pin]="MCU_SENSOR";
+PIN[TA_MMB10,neopixel_pin]="MCU_RGB";
+PIN[TA_MMB10,gate_sensor_pin]="MCU_STP1";
+PIN[TA_MMB10,pre_gate_0_pin]="MCU_STP3";
+PIN[TA_MMB10,pre_gate_1_pin]="MCU_STP4";
+PIN[TA_MMB10,pre_gate_2_pin]="MCU_STP5";
+PIN[TA_MMB10,pre_gate_3_pin]="MCU_STP6";
+PIN[TA_MMB10,pre_gate_4_pin]="MCU_STP7";
+PIN[TA_MMB10,pre_gate_5_pin]="MCU_STP8";
+PIN[TA_MMB10,pre_gate_6_pin]="MCU_STP9";
+PIN[TA_MMB10,pre_gate_7_pin]="MCU_STP10";
+PIN[TA_MMB10,pre_gate_8_pin]="";
+PIN[TA_MMB10,pre_gate_9_pin]="";
+PIN[TA_MMB10,pre_gate_10_pin]="";
+PIN[TA_MMB10,pre_gate_11_pin]="";
+
+PIN[TA_AFC10,gear_uart_pin]="MCU_STP1_UART";
+PIN[TA_AFC10,gear_step_pin]="MCU_STP1_STEP";
+PIN[TA_AFC10,gear_dir_pin]="MCU_STP1_DIR";
+PIN[TA_AFC10,gear_enable_pin]="MCU_STP1_EN";
+PIN[TA_AFC10,gear_diag_pin]="MCU_STP1_DIAG";
+PIN[TA_AFC10,selector_uart_pin]="MCU_STP2_UART";
+PIN[TA_AFC10,selector_step_pin]="MCU_STP2_STEP";
+PIN[TA_AFC10,selector_dir_pin]="MCU_STP2_DIR";
+PIN[TA_AFC10,selector_enable_pin]="MCU_STP2_EN";
+PIN[TA_AFC10,selector_diag_pin]="MCU_STP2_DIAG";
+PIN[TA_AFC10,selector_endstop_pin]="MCU_SW12";
+PIN[TA_AFC10,servo_pin]="MCU_SW11";
+PIN[TA_AFC10,encoder_pin]="MCU_SW10";
+PIN[TA_AFC10,neopixel_pin]="MCU_RGB1";
+PIN[TA_AFC10,gate_sensor_pin]="MCU_SW9";
+PIN[TA_AFC10,pre_gate_0_pin]="MCU_SW1";
+PIN[TA_AFC10,pre_gate_1_pin]="MCU_SW2";
+PIN[TA_AFC10,pre_gate_2_pin]="MCU_SW3";
+PIN[TA_AFC10,pre_gate_3_pin]="MCU_SW4";
+PIN[TA_AFC10,pre_gate_4_pin]="MCU_SW5";
+PIN[TA_AFC10,pre_gate_5_pin]="MCU_SW6";
+PIN[TA_AFC10,pre_gate_6_pin]="MCU_SW7";
+PIN[TA_AFC10,pre_gate_7_pin]="MCU_SW8";
+PIN[TA_AFC10,pre_gate_8_pin]="";
+PIN[TA_AFC10,pre_gate_9_pin]="";
+PIN[TA_AFC10,pre_gate_10_pin]="";
+PIN[TA_AFC10,pre_gate_11_pin]="";
+
+# Type B Pins
+
+PIN[TB_MMB10,gear_uart_pin]="MCU_M1_UART";
+PIN[TB_MMB10,gear_step_pin]="MCU_M1_STEP";
+PIN[TB_MMB10,gear_dir_pin]="MCU_M1_DIR";
+PIN[TB_MMB10,gear_enable_pin]="MCU_M1_EN";
+PIN[TB_MMB10,gear_diag_pin]="";
+PIN[TB_MMB10,pre_gate_0_pin]="MCU_STP1";
+PIN[TB_MMB10,mid_gate_0_pin]="MCU_STP5";
+PIN[TB_MMB10,gate0_mot_in1_pin]="MCU_MOT";
+PIN[TB_MMB10,gate0_mot_in2_pin]="";
+PIN[TB_MMB10,gear_1_uart_pin]="MCU_M2_UART";
+PIN[TB_MMB10,gear_1_step_pin]="MCU_M2_STEP";
+PIN[TB_MMB10,gear_1_dir_pin]="MCU_M2_DIR";
+PIN[TB_MMB10,gear_1_enable_pin]="MCU_M2_EN";
+PIN[TB_MMB10,gear_1_diag_pin]="";
+PIN[TB_MMB10,pre_gate_1_pin]="MCU_STP2";
+PIN[TB_MMB10,mid_gate_1_pin]="MCU_STP6";
+PIN[TB_MMB10,gate1_mot_in1_pin]="MCU_SENSOR";
+PIN[TB_MMB10,gate1_mot_in2_pin]="";
+PIN[TB_MMB10,gear_2_uart_pin]="MCU_M3_UART";
+PIN[TB_MMB10,gear_2_step_pin]="MCU_M3_STEP";
+PIN[TB_MMB10,gear_2_dir_pin]="MCU_M3_DIR";
+PIN[TB_MMB10,gear_2_enable_pin]="MCU_M3_EN";
+PIN[TB_MMB10,gear_2_diag_pin]="";
+PIN[TB_MMB10,pre_gate_2_pin]="MCU_STP3";
+PIN[TB_MMB10,mid_gate_2_pin]="MCU_STP7";
+PIN[TB_MMB10,gate2_mot_in1_pin]="MCU_STP10";
+PIN[TB_MMB10,gate2_mot_in2_pin]="";
+PIN[TB_MMB10,gear_3_uart_pin]="MCU_M4_UART";
+PIN[TB_MMB10,gear_3_step_pin]="MCU_M4_STEP";
+PIN[TB_MMB10,gear_3_dir_pin]="MCU_M4_DIR";
+PIN[TB_MMB10,gear_3_enable_pin]="MCU_M4_EN";
+PIN[TB_MMB10,gear_3_diag_pin]="";
+PIN[TB_MMB10,pre_gate_3_pin]="MCU_STP4";
+PIN[TB_MMB10,mid_gate_3_pin]="MCU_STP8";
+PIN[TB_MMB10,gate3_mot_in1_pin]="MCU_STP11";
+PIN[TB_MMB10,gate3_mot_in2_pin]="";
+PIN[TB_MMB10,neopixel_pin]="MCU_RGB";
+PIN[TB_MMB10,gate_sensor_pin]="MCU_I2C_SCL";
+
+PIN[TB_AFC10,gear_uart_pin]="MCU_STP1_UART";
+PIN[TB_AFC10,gear_step_pin]="MCU_STP1_STEP";
+PIN[TB_AFC10,gear_dir_pin]="MCU_STP1_DIR";
+PIN[TB_AFC10,gear_enable_pin]="MCU_STP1_EN";
+PIN[TB_AFC10,gear_diag_pin]="MCU_STP1_DIAG";
+PIN[TB_AFC10,pre_gate_0_pin]="MCU_SW2";
+PIN[TB_AFC10,mid_gate_0_pin]="MCU_SW7";
+PIN[TB_AFC10,gate0_mot_in1_pin]="MCU_MOT1_IN1";
+PIN[TB_AFC10,gate0_mot_in2_pin]="MCU_MOT1_IN2";
+PIN[TB_AFC10,gear_1_uart_pin]="MCU_STP2_UART";
+PIN[TB_AFC10,gear_1_step_pin]="MCU_STP2_STEP";
+PIN[TB_AFC10,gear_1_dir_pin]="MCU_STP2_DIR";
+PIN[TB_AFC10,gear_1_enable_pin]="MCU_STP2_EN";
+PIN[TB_AFC10,gear_1_diag_pin]="MCU_STP2_DIAG";
+PIN[TB_AFC10,pre_gate_1_pin]="MCU_SW3";
+PIN[TB_AFC10,mid_gate_1_pin]="MCU_SW8";
+PIN[TB_AFC10,gate1_mot_in1_pin]="MCU_MOT2_IN1";
+PIN[TB_AFC10,gate1_mot_in2_pin]="MCU_MOT2_IN2";
+PIN[TB_AFC10,gear_2_uart_pin]="MCU_STP3_UART";
+PIN[TB_AFC10,gear_2_step_pin]="MCU_STP3_STEP";
+PIN[TB_AFC10,gear_2_dir_pin]="MCU_STP3_DIR";
+PIN[TB_AFC10,gear_2_enable_pin]="MCU_STP3_EN";
+PIN[TB_AFC10,gear_2_diag_pin]="MCU_STP3_DIAG";
+PIN[TB_AFC10,pre_gate_2_pin]="MCU_SW4";
+PIN[TB_AFC10,mid_gate_2_pin]="MCU_SW9";
+PIN[TB_AFC10,gate2_mot_in1_pin]="MCU_MOT3_IN1";
+PIN[TB_AFC10,gate2_mot_in2_pin]="MCU_MOT3_IN2";
+PIN[TB_AFC10,gear_3_uart_pin]="MCU_STP4_UART";
+PIN[TB_AFC10,gear_3_step_pin]="MCU_STP4_STEP";
+PIN[TB_AFC10,gear_3_dir_pin]="MCU_STP4_DIR";
+PIN[TB_AFC10,gear_3_enable_pin]="MCU_STP4_EN";
+PIN[TB_AFC10,gear_3_diag_pin]="MCU_STP4_DIAG";
+PIN[TB_AFC10,pre_gate_3_pin]="MCU_SW5";
+PIN[TB_AFC10,mid_gate_3_pin]="MCU_SW10";
+PIN[TB_AFC10,gate3_mot_in1_pin]="MCU_MOT4_IN1";
+PIN[TB_AFC10,gate3_mot_in2_pin]="MCU_MOT4_IN2";
+PIN[TB_AFC10,neopixel_pin]="MCU_RGB1";
+PIN[TB_AFC10,gate_sensor_pin]="MCU_STP1";
+
 
 # These pins will usually be on main mcu for wiring simplification
 #
@@ -829,7 +943,7 @@ copy_config_files() {
         mmu_num_gates=${_param_mmu_num_gates}
     fi 
 
-    for file in `cd ${SRCDIR}/config/base ; ls *.cfg`; do
+    for file in `cd ${SRCDIR}/config/base ; ls *.cfg ; echo mcu_definitions`; do
         src=${SRCDIR}/config/base/${file}
         dest=${mmu_dir}/base/${file}
         next_dest=${next_mmu_dir}/base/${file}
@@ -879,6 +993,7 @@ copy_config_files() {
             cat ${dest} | sed -e "\
                 s/{brd_type}/${brd_type}/; \
                 s%{serial}%${serial}%; \
+                s/{mcu_def}/${mcu_def}/; \
                 s/{mmu_num_gates}/${mmu_num_gates}/; \
                 s/{mmu_num_leds}/${mmu_num_leds}/; \
                 s/{gear_gear_ratio}/${gear_gear_ratio}/; \
@@ -907,12 +1022,39 @@ copy_config_files() {
                 s/{pre_gate_9_pin}/${PIN[$brd_type,pre_gate_9_pin]}/; \
                 s/{pre_gate_10_pin}/${PIN[$brd_type,pre_gate_10_pin]}/; \
                 s/{pre_gate_11_pin}/${PIN[$brd_type,pre_gate_11_pin]}/; \
+                s/{mid_gate_0_pin}/${PIN[$brd_type,mid_gate_0_pin]}/; \
+                s/{mid_gate_1_pin}/${PIN[$brd_type,mid_gate_1_pin]}/; \
+                s/{mid_gate_2_pin}/${PIN[$brd_type,mid_gate_2_pin]}/; \
+                s/{mid_gate_3_pin}/${PIN[$brd_type,mid_gate_3_pin]}/; \
+                s/{mid_gate_4_pin}/${PIN[$brd_type,mid_gate_4_pin]}/; \
+                s/{mid_gate_5_pin}/${PIN[$brd_type,mid_gate_5_pin]}/; \
+                s/{mid_gate_6_pin}/${PIN[$brd_type,mid_gate_6_pin]}/; \
+                s/{mid_gate_7_pin}/${PIN[$brd_type,mid_gate_7_pin]}/; \
+                s/{mid_gate_8_pin}/${PIN[$brd_type,mid_gate_8_pin]}/; \
+                s/{mid_gate_9_pin}/${PIN[$brd_type,mid_gate_9_pin]}/; \
+                s/{mid_gate_10_pin}/${PIN[$brd_type,mid_gate_10_pin]}/; \
+                s/{mid_gate_11_pin}/${PIN[$brd_type,mid_gate_11_pin]}/; \
                 s/{gear_gear_ratio}/${gear_gear_ratio}/; \
                 s/{gear_uart_pin}/${PIN[$brd_type,gear_uart_pin]}/; \
                 s/{gear_step_pin}/${PIN[$brd_type,gear_step_pin]}/; \
                 s/{gear_dir_pin}/${PIN[$brd_type,gear_dir_pin]}/; \
                 s/{gear_enable_pin}/${PIN[$brd_type,gear_enable_pin]}/; \
                 s/{gear_diag_pin}/${PIN[$brd_type,gear_diag_pin]}/; \
+                s/{gear_1_uart_pin}/${PIN[$brd_type,gear_1_uart_pin]}/; \
+                s/{gear_1_step_pin}/${PIN[$brd_type,gear_1_step_pin]}/; \
+                s/{gear_1_dir_pin}/${PIN[$brd_type,gear_1_dir_pin]}/; \
+                s/{gear_1_enable_pin}/${PIN[$brd_type,gear_1_enable_pin]}/; \
+                s/{gear_1_diag_pin}/${PIN[$brd_type,gear_1_diag_pin]}/; \
+                s/{gear_2_uart_pin}/${PIN[$brd_type,gear_2_uart_pin]}/; \
+                s/{gear_2_step_pin}/${PIN[$brd_type,gear_2_step_pin]}/; \
+                s/{gear_2_dir_pin}/${PIN[$brd_type,gear_2_dir_pin]}/; \
+                s/{gear_2_enable_pin}/${PIN[$brd_type,gear_2_enable_pin]}/; \
+                s/{gear_2_diag_pin}/${PIN[$brd_type,gear_2_diag_pin]}/; \
+                s/{gear_3_uart_pin}/${PIN[$brd_type,gear_3_uart_pin]}/; \
+                s/{gear_3_step_pin}/${PIN[$brd_type,gear_3_step_pin]}/; \
+                s/{gear_3_dir_pin}/${PIN[$brd_type,gear_3_dir_pin]}/; \
+                s/{gear_3_enable_pin}/${PIN[$brd_type,gear_3_enable_pin]}/; \
+                s/{gear_3_diag_pin}/${PIN[$brd_type,gear_3_diag_pin]}/; \
                 s/{selector_uart_pin}/${PIN[$brd_type,selector_uart_pin]}/; \
                 s/{selector_step_pin}/${PIN[$brd_type,selector_step_pin]}/; \
                 s/{selector_dir_pin}/${PIN[$brd_type,selector_dir_pin]}/; \
@@ -922,12 +1064,49 @@ copy_config_files() {
                 s/{servo_pin}/${PIN[$brd_type,servo_pin]}/; \
                 s/{encoder_pin}/${PIN[$brd_type,encoder_pin]}/; \
                 s/{neopixel_pin}/${PIN[$brd_type,neopixel_pin]}/; \
+                s/{gate0_mot_in1_pin}/${PIN[$brd_type,gate0_mot_in1_pin]}/; \
+                s/{gate0_mot_in2_pin}/${PIN[$brd_type,gate0_mot_in2_pin]}/; \
+                s/{gate1_mot_in1_pin}/${PIN[$brd_type,gate1_mot_in1_pin]}/; \
+                s/{gate1_mot_in2_pin}/${PIN[$brd_type,gate1_mot_in2_pin]}/; \
+                s/{gate2_mot_in1_pin}/${PIN[$brd_type,gate2_mot_in1_pin]}/; \
+                s/{gate2_mot_in2_pin}/${PIN[$brd_type,gate2_mot_in2_pin]}/; \
+                s/{gate3_mot_in1_pin}/${PIN[$brd_type,gate3_mot_in1_pin]}/; \
+                s/{gate3_mot_in2_pin}/${PIN[$brd_type,gate3_mot_in2_pin]}/; \
                     " > ${dest}.tmp && mv ${dest}.tmp ${dest}
 
-            # Handle LED option - Comment out if disabled
+        
+        if [ -n "${mcu_def}" -a "${file}" == "mmu.cfg" ]; then
+            sed "/#\[include mcu_definitions/s/^#*//" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+        fi
+
+        # Handle LED option - Comment out if disabled
 	    if [ "${file}" == "mmu_hardware.cfg" -a "$SETUP_LED" -eq 0 ]; then
-                sed "/${LED_SECTION}/,\$s/^/#/" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
-            fi
+            sed "/${LED_SECTION}/,\$s/^/#/" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+        fi
+
+        # Remove invalid stuff for mmu type
+        if [ "$mmu_type" == 'a' ]; then
+            case "$file" in
+                'mmu_hardware.cfg')
+                    ;;
+                'mmu.cfg')
+                    sed "/^ *MMU_MID_GATE_/d;" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+                    sed "/^ *MMU_GATE_.*_MOT_IN/d;" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+                    sed "/^ *MMU_GEAR_[0-9]/d;" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+                    ;;
+            esac
+        elif [ "$mmu_type" == 'b' ]; then
+            case "$file" in
+                'mmu_hardware.cfg')
+                    sed "/^# ${SELECTOR_SECTION}/,/^# ${SERVOS_SECTION}/{/^# ${SERVOS_SECTION}/!d;};" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+                    sed "/^# ${SELECTOR_SERVO_SECTION}/,/^# ${GANTRY_SERVO_SECTION}/{/^# ${GANTRY_SERVO_SECTION}/!d;};" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+                    ;;
+                'mmu.cfg')
+                    sed "/^ *MMU_SEL_/d;" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+                    sed "/^ *MMU_SERVO=/d;" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
+                    ;;
+            esac
+        fi
 
         # Conifguration parameters -----------------------------------------------------------
         elif [ "${file}" == "mmu_parameters.cfg" ]; then
@@ -952,7 +1131,7 @@ copy_config_files() {
                 done
             done >> $dest
 
-            # If any params are still left worn the user because they will be lost (should have been upgraded)
+            # If any params are still left warn the user because they will be lost (should have been upgraded)
             for var in $(set | grep '^_param_' | cut -d= -f1); do
                 value=$(eval echo \$$var)
                 param=${var#_param_}
@@ -1037,6 +1216,41 @@ copy_config_files() {
         fi
     done
 }
+
+set_cfg_value() {
+    # usage: set_cfg_value [path/to/file.cfg] [section_name] [property_name] [value]
+    cfg_file="${1}"
+    section="${2}"
+    key="${3}"
+    new_value="${4}"
+    awk -v section="$section" -v key="$key" -v new_value="$new_value" '
+        BEGIN { FS = ":"; OFS = ":" }
+        /^\s*\[.*\]\s*/ {
+            in_section = ($1 == "[" section "]")
+            section_line = -1
+        }
+        { 
+            if (in_section) {
+              section_line = section_line + 1
+            }
+            if (in_section && section_line == 1) { 
+                print key, " " new_value
+                if (key != $1) {
+                    print
+                }
+            } else if (in_section && key == $1) {} else {
+                print
+            }
+        }
+    ' "$cfg_file" # > "$cfg_file.tmp" && mv "$cfg_file.tmp" "$cfg_file"
+}
+
+# set_cfg_value ./config/base/mmu_hardware.cfg stepper_mmu_gear_1 step_pin foo #| grep -A10 '\[stepper_mmu_gear_1\]'
+# set_cfg_value ./config/base/mmu_hardware.cfg stepper_mmu_gear_1 step_pin foo_step | grep -C10 'foo'
+# set_cfg_value ./config/base/mmu_hardware.cfg stepper_mmu_gear_1 extra_endstop_pins foo_extra | grep -C10 'foo'
+# update_ini_file ./config/base/mmu_hardware.cfg stepper_mmu_gear_1 step_pin foo_step | grep -C10 'foo'
+# update_ini_file ./config/base/mmu_hardware.cfg stepper_mmu_gear_1 extra_endstop_pins foo_extra | grep -C10 'foo'
+#exit 1
 
 uninstall_config_files() {
     if [ -d "${KLIPPER_CONFIG_HOME}/mmu" ]; then
@@ -1262,8 +1476,12 @@ prompt_123() {
     prompt=$1
     max=$2
     while true; do
-        read -p "${prompt} (1-${max})? " -n 1 number
-        if [[ "$number" =~ [1-${max}] ]]; then
+        if [[ "${max}" -lt 10 ]]; then
+            read -p "${prompt} (1-${max})? " -n1 number
+        else
+            read -p "${prompt} (1-${max})? " number
+        fi
+        if [[ "$number" -gt 0 ]] && [[ "$number" -lt "$((max+1))" ]]; then
             echo ${number}
             break
         fi
@@ -1274,6 +1492,7 @@ questionaire() {
     # Set default substitution tokens
     mmu_vendor="Other"
     mmu_version="1.0"
+    mmu_type="a"
     extruder_homing_endstop="collision"
     gate_homing_endstop="encoder"
     gate_parking_distance=23.0
@@ -1301,7 +1520,8 @@ questionaire() {
     echo -e "1) ERCF v1.1 (inc TripleDecky, Springy, Binky mods)"
     echo -e "2) ERCF v2.0"
     echo -e "3) Tradrack v1.0"
-    echo -e "4) Other (or just want starter config files)"
+    echo -e "4) BoxTurtle Beta"
+    echo -e "5) Other (or just want starter config files)"
     num=$(prompt_123 "MMU Type?" 4)
     echo
     case $num in
@@ -1371,13 +1591,27 @@ questionaire() {
             esac
             ;;
         4)
+            HAS_ENCODER=no
+            mmu_vendor="BoxTurtle"
+            mmu_version="Beta"
+            mmu_type="b"
+            mmu_num_gates=4
+            extruder_homing_endstop="none"
+            gate_homing_endstop="mmu_gate"
+            gate_parking_distance=20
+
+            gear_gear_ratio="50:17"
+            gear_run_current=0.8
+            gear_hold_current=0.2
+            ;;
+        5)
             HAS_ENCODER=yes
             echo
             echo -e "${WARNING}    IMPORTANT: Since you have a custom MMU you will need to setup some CAD dimensions and other key parameters... See doc"
             ;;
     esac
 
-    mmu_num_gates=12
+    mmu_num_gates=${mmu_num_gates:-12}
     echo
     echo -e "${PROMPT}${SECTION}How many gates (selectors) do you have?${INPUT}"
     while true; do
@@ -1391,27 +1625,31 @@ questionaire() {
     mmu_num_leds=$(expr $mmu_num_gates + 1)
 
     brd_type="unknown"
+    mcu_def=
     echo
     echo -e "${PROMPT}${SECTION}Select mcu board type used to control MMU${INPUT}"
-    echo -e " 1) BTT MMB v1.0 (with CANbus)"
-    echo -e " 2) BTT MMB v1.1 (with CANbus)"
-    echo -e " 3) Fysetc Burrows ERB v1"
-    echo -e " 4) Fysetc Burrows ERB v2"
-    echo -e " 5) Standard EASY-BRD (with SAMD21)"
-    echo -e " 6) EASY-BRD with RP2040"
-    echo -e " 7) Mellow EASY-BRD v1.x (with CANbus)"
-    echo -e " 8) Mellow EASY-BRD v2.x (with CANbus)"
-    echo -e " 9) Not in list / Unknown"
-    num=$(prompt_123 "MCU type?" 9)
+    echo -e "  1) BTT MMB v1.0 (with CANbus)"
+    echo -e "  2) BTT MMB v1.1 (with CANbus)"
+    echo -e "  3) Fysetc Burrows ERB v1"
+    echo -e "  4) Fysetc Burrows ERB v2"
+    echo -e "  5) Standard EASY-BRD (with SAMD21)"
+    echo -e "  6) EASY-BRD with RP2040"
+    echo -e "  7) Mellow EASY-BRD v1.x (with CANbus)"
+    echo -e "  8) Mellow EASY-BRD v2.x (with CANbus)"
+    echo -e "  9) ArmoredTurtle AFC Lite v1.0"
+    echo -e " 10) Not in list / Unknown"
+    num=$(prompt_123 "MCU type?" 10)
     echo
     case $num in
         1)
             brd_type="MMB10"
             pattern="Klipper_stm32"
+            mcu_def="BTT_MMB_CAN_v1.0.cfg"
             ;;
         2)
-            brd_type="MMB11"
+            brd_type="MMB10"
             pattern="Klipper_stm32"
+            mcu_def="BTT_MMB_CAN_v1.1.cfg"
             ;;
         3)
             brd_type="ERB"
@@ -1438,10 +1676,16 @@ questionaire() {
             pattern="Klipper_rp2040"
             ;;
         9)
+            brd_type="AFC10"
+            pattern="Klipper_stm32"
+            mcu_def="ArmoredTurtle_AFC_Lite_v1.0.cfg"
+            ;;
+        10)
             brd_type="unknown"
             pattern="Klipper_"
             ;;
     esac
+    brd_type="T${mmu_type^^}_${brd_type}"
 
     serial=""
     echo
@@ -1473,27 +1717,29 @@ questionaire() {
         eval PIN[${brd_type},encoder_pin]=""
     fi
 
-    echo
-    echo -e "${PROMPT}${SECTION}Touch selector operation using TMC Stallguard? This allows for additional selector recovery steps but is difficult to tune"
-    echo -e "Not recommend if you are new to MMU/Happy Hare & MCU must have DIAG output for steppers. Can configure later${INPUT}"
-    yn=$(prompt_yn "Enable selector touch operation")
-    echo
-    case $yn in
-        y)
-            if [ "${brd_type}" == "EASY-BRD" ]; then
-                echo
-                echo -e "${WARNING}    IMPORTANT: Set the J6 jumper pins to 2-3 and 4-5, i.e. .[..][..]  MAKE A NOTE NOW!!"
-            fi
-            SETUP_SELECTOR_TOUCH=1
-            ;;
-        n)
-            if [ "${brd_type}" == "EASY-BRD" ]; then
-                echo
-                echo -e "${WARNING}    IMPORTANT: Set the J6 jumper pins to 1-2 and 4-5, i.e. [..].[..]  MAKE A NOTE NOW!!"
-            fi
-            SETUP_SELECTOR_TOUCH=0
-            ;;
-    esac
+    if [ "${mmu_type}" == "a" ]; then
+        echo
+        echo -e "${PROMPT}${SECTION}Touch selector operation using TMC Stallguard? This allows for additional selector recovery steps but is difficult to tune"
+        echo -e "Not recommend if you are new to MMU/Happy Hare & MCU must have DIAG output for steppers. Can configure later${INPUT}"
+        yn=$(prompt_yn "Enable selector touch operation")
+        echo
+        case $yn in
+            y)
+                if [ "${brd_type}" == "EASY-BRD" ]; then
+                    echo
+                    echo -e "${WARNING}    IMPORTANT: Set the J6 jumper pins to 2-3 and 4-5, i.e. .[..][..]  MAKE A NOTE NOW!!"
+                fi
+                SETUP_SELECTOR_TOUCH=1
+                ;;
+            n)
+                if [ "${brd_type}" == "EASY-BRD" ]; then
+                    echo
+                    echo -e "${WARNING}    IMPORTANT: Set the J6 jumper pins to 1-2 and 4-5, i.e. [..].[..]  MAKE A NOTE NOW!!"
+                fi
+                SETUP_SELECTOR_TOUCH=0
+                ;;
+        esac
+    fi
 
     echo
     echo -e "${PROMPT}${SECTION}Would you like to have neopixel LEDs setup now for your MMU?${INPUT}"
@@ -1639,17 +1885,19 @@ questionaire() {
                     ;;
             esac
 
-            echo -e "${PROMPT}    Would you like to include subset of the legacy ERCF_ command set compatibility module${INPUT}"
-            yn=$(prompt_yn "    Include legacy ERCF command set (not recommended)")
-            echo
-            case $yn in
-                y)
-                    ERCF_COMPAT=1
-                    ;;
-                n)
-                    ERCF_COMPAT=0
-                    ;;
-            esac
+            if [ "${mmu_type}" == "a" ]; then
+                echo -e "${PROMPT}    Would you like to include subset of the legacy ERCF_ command set compatibility module${INPUT}"
+                yn=$(prompt_yn "    Include legacy ERCF command set (not recommended)")
+                echo
+                case $yn in
+                    y)
+                        ERCF_COMPAT=1
+                        ;;
+                    n)
+                        ERCF_COMPAT=0
+                        ;;
+                esac
+            fi
 
             echo -e "${PROMPT}    Would you like to include the default pause/resume macros supplied with Happy Hare${INPUT}"
             yn=$(prompt_yn "    Include client_macros.cfg")
@@ -1696,9 +1944,11 @@ questionaire() {
     echo -e "mmu_vendor: ${mmu_vendor}"
     echo -e "mmu_version: ${mmu_version}"
     echo -e "mmu_num_gates: ${mmu_num_gates}"
-    echo -e "servo_up_angle: ${servo_up_angle}"
-    echo -e "servo_move_angle: ${servo_move_angle}"
-    echo -e "servo_down_angle: ${servo_down_angle}"
+    if [ "${mmu_type}" == 'a' ]; then
+        echo -e "servo_up_angle: ${servo_up_angle}"
+        echo -e "servo_move_angle: ${servo_move_angle}"
+        echo -e "servo_down_angle: ${servo_down_angle}"
+    fi
     echo -e "enable_clog_detection: ${enable_clog_detection}"
     echo -e "enable_endless_spool: ${enable_endless_spool}"
 

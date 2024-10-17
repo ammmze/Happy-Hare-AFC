@@ -129,6 +129,7 @@ class MmuSensors:
 
     # TODO Use Mmu class definitions
     ENDSTOP_PRE_GATE       = 'mmu_pre_gate'
+    ENDSTOP_MID_GATE       = 'mmu_mid_gate'
     ENDSTOP_GATE           = 'mmu_gate'
     ENDSTOP_EXTRUDER_ENTRY = "extruder"       # Extruder entry sensor
     ENDSTOP_TOOLHEAD       = 'toolhead'
@@ -158,6 +159,28 @@ class MmuSensors:
             # Replace with custom runout_helper because limited operation is possible during print
             insert_gcode = "__MMU_GATE_INSERT GATE=%d" % gate
             runout_gcode = "__MMU_GATE_RUNOUT GATE=%d" % gate
+            mmu_runout_helper = MmuRunoutHelper(self.printer, name, insert_gcode, runout_gcode, event_delay)
+            fs.runout_helper = mmu_runout_helper
+            fs.get_status = mmu_runout_helper.get_status
+
+        # Setup and mid-gate sensors that are defined...
+        for gate in range(23):
+            switch_pin = config.get('mid_gate_switch_pin_%d' % gate, None)
+
+            if switch_pin is None or self._is_empty_pin(switch_pin):
+                continue
+
+            # Automatically create necessary filament_switch_sensors
+            name = "%s_%d_sensor" % (self.ENDSTOP_MID_GATE, gate)
+            section = "filament_switch_sensor %s" % name
+            config.fileconfig.add_section(section)
+            config.fileconfig.set(section, "switch_pin", switch_pin)
+            config.fileconfig.set(section, "pause_on_runout", "False")
+            fs = self.printer.load_object(config, section)
+
+            # Replace with custom runout_helper because limited operation is possible during print
+            insert_gcode = "RESPOND MSG='__MMU_GATE_INSERT MID=1 GATE=%d'" % gate
+            runout_gcode = "RESPOND MSG='__MMU_GATE_RUNOUT MID=1 GATE=%d'" % gate
             mmu_runout_helper = MmuRunoutHelper(self.printer, name, insert_gcode, runout_gcode, event_delay)
             fs.runout_helper = mmu_runout_helper
             fs.get_status = mmu_runout_helper.get_status
