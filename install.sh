@@ -1309,6 +1309,20 @@ prompt_123() {
     done
 }
 
+prompt_option() {
+    local var_name="$1"
+    local query="$2"
+    shift 2
+    local i=0
+    for val in "$@"; do
+        i=$((i+1))
+        echo "$i) $val"
+    done
+    REPLY=$(prompt_123 "$query" "$#")
+    echo
+    declare -g $var_name="${!REPLY}"
+}
+
 questionaire() {
     # Set default substitution tokens
     mmu_vendor="Other"
@@ -1337,13 +1351,14 @@ questionaire() {
     echo -e "(Note that all this script does is set a lot of the time consuming parameters in the config"
     echo
     echo -e "${PROMPT}${SECTION}What type of MMU are you running?${INPUT}"
-    echo -e "1) ERCF v1.1 (inc TripleDecky, Springy, Binky mods)"
-    echo -e "2) ERCF v2.0"
-    echo -e "3) Tradrack v1.0"
-    echo -e "4) Other (or just want starter config files)"
-    num=$(prompt_123 "MMU Type?" 4)
-    echo
-    case $num in
+    options=(
+        'ERCF v1.1 (inc TripleDecky, Springy, Binky mods)'
+        'ERCF v2.0'
+        'Tradrack v1.0'
+        'Other (or just want starter config files)'
+    )
+    prompt_option opt 'MMU Type' "${options[@]}"
+    case $REPLY in
         1)
             HAS_ENCODER=yes
             mmu_vendor="ERCF"
@@ -1409,7 +1424,7 @@ questionaire() {
                 ;;
             esac
             ;;
-        4)
+        *)
             HAS_ENCODER=yes
             echo
             echo -e "${WARNING}    IMPORTANT: Since you have a custom MMU you will need to setup some CAD dimensions and other key parameters... See doc"
@@ -1420,7 +1435,7 @@ questionaire() {
     echo
     echo -e "${PROMPT}${SECTION}How many gates (selectors) do you have?${INPUT}"
     while true; do
-        read -p "Number of gates? " mmu_num_gates
+        mmu_num_gates=$(prompt_123 "Number of gates")
         if ! [ "${mmu_num_gates}" -ge 1 ] 2> /dev/null ;then
             echo -e "${INFO}Positive integer value only"
       else
@@ -1432,18 +1447,19 @@ questionaire() {
     brd_type="unknown"
     echo
     echo -e "${PROMPT}${SECTION}Select mcu board type used to control MMU${INPUT}"
-    echo -e " 1) BTT MMB v1.0 (with CANbus)"
-    echo -e " 2) BTT MMB v1.1 (with CANbus)"
-    echo -e " 3) Fysetc Burrows ERB v1"
-    echo -e " 4) Fysetc Burrows ERB v2"
-    echo -e " 5) Standard EASY-BRD (with SAMD21)"
-    echo -e " 6) EASY-BRD with RP2040"
-    echo -e " 7) Mellow EASY-BRD v1.x (with CANbus)"
-    echo -e " 8) Mellow EASY-BRD v2.x (with CANbus)"
-    echo -e " 9) Not in list / Unknown"
-    num=$(prompt_123 "MCU type?" 9)
-    echo
-    case $num in
+    options=(
+        'BTT MMB v1.0 (with CANbus)'
+        'BTT MMB v1.1 (with CANbus)'
+        'Fysetc Burrows ERB v1'
+        'Fysetc Burrows ERB v2'
+        'Standard EASY-BRD (with SAMD21)'
+        'EASY-BRD with RP2040'
+        'Mellow EASY-BRD v1.x (with CANbus)'
+        'Mellow EASY-BRD v2.x (with CANbus)'
+        'Not in list / Unknown'
+    )
+    prompt_option opt 'MCU Type' "${options[@]}"
+    case $REPLY in
         1)
             brd_type="MMB10"
             pattern="Klipper_stm32"
@@ -1476,7 +1492,7 @@ questionaire() {
             brd_type="MELLOW-EASY-BRD-CANv2"
             pattern="Klipper_rp2040"
             ;;
-        9)
+        *)
             brd_type="unknown"
             pattern="Klipper_"
             ;;
@@ -1553,14 +1569,15 @@ questionaire() {
         maximum_pulse_width=0.00215
 
         echo
-        echo -e "${PROMPT}${SECTION}Which servo are you using?"
-        echo -e "1) MG-90S"
-        echo -e "2) Savox SH0255MG"
-        echo -e "3) GDW DS041MG"
-        echo -e "4) Not listed / Other${INPUT}"
-        num=$(prompt_123 "Servo?" 4)
-        echo
-        case $num in
+        echo -e "${PROMPT}${SECTION}Which servo are you using?${INPUT}"
+        options=(
+            'MG-90S'
+            'Savox SH0255MG'
+            'GDW DS041MG'
+            'Not listed / Other'
+        )
+        prompt_option opt 'Servo' "${options[@]}"
+        case $REPLY in
             1)
                 # MG-90S
                 servo_up_angle=30
@@ -1602,12 +1619,13 @@ questionaire() {
         maximum_pulse_width=0.00220
 
         echo
-        echo -e "${PROMPT}${SECTION}Which servo are you using?"
-        echo -e "1) PS-1171MG or FT1117M (Tradrack)"
-        echo -e "2) Not listed / Other${INPUT}"
-        num=$(prompt_123 "Servo?" 2)
-        echo
-        case $num in
+        echo -e "${PROMPT}${SECTION}Which servo are you using?${INPUT}"
+        options=(
+            'PS-1171MG or FT1117M (Tradrack)'
+            'Not listed / Other'
+        )
+        prompt_option opt 'Servo' "${options[@]}"
+        case $REPLY in
             1)
                 servo_up_angle=145
                 servo_move_angle=${servo_up_angle}
