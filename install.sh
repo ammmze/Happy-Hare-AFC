@@ -1285,11 +1285,27 @@ prompt_123() {
     prompt=$1
     max=$2
     while true; do
-        read -p "${prompt} (1-${max})? " -n 1 number
-        if [[ "$number" =~ [1-${max}] ]]; then
-            echo ${number}
-            break
+        if [ -z "${max}" ]; then
+            read -ep "${prompt}? " number
+        elif [[ "${max}" -lt 10 ]]; then
+            read -ep "${prompt} (1-${max})? " -n1 number
+        else
+            read -ep "${prompt} (1-${max})? " number
         fi
+        if ! [[ "$number" =~ ^-?[0-9]+$ ]] ; then
+            echo -e "Invalid value." >&2
+            continue
+        fi
+        if [ "$number" -lt 1 ]; then
+            echo -e "Value must be greater than 1." >&2
+            continue
+        fi
+        if [ -n "$max" ] && [ "$number" -gt "$max" ]; then
+            echo -e "Value must be less than $((max+1))." >&2
+            continue
+        fi
+        echo ${number}
+        break
     done
 }
 
