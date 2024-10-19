@@ -1355,6 +1355,7 @@ questionaire() {
         'ERCF v1.1 (inc TripleDecky, Springy, Binky mods)'
         'ERCF v2.0'
         'Tradrack v1.0'
+        'ArmoredTurtle BoxTurtle Beta'
         'Other (or just want starter config files)'
     )
     prompt_option opt 'MMU Type' "${options[@]}"
@@ -1424,6 +1425,14 @@ questionaire() {
                 ;;
             esac
             ;;
+        4)
+            HAS_ENCODER=no
+            mmu_vendor="ArmoredTurtle"
+            mmu_version="Box Turtle Beta"
+            extruder_homing_endstop="none"
+            gate_homing_endstop="mmu_gate"
+            gate_parking_distance=17.5
+            ;;
         *)
             HAS_ENCODER=yes
             echo
@@ -1447,6 +1456,8 @@ questionaire() {
     brd_type="unknown"
     echo
     echo -e "${PROMPT}${SECTION}Select mcu board type used to control MMU${INPUT}"
+    # Perhaps consider just supporting the BTT MMB (and eventually AFC) when mmu_vendor is BoxTurtle
+    # as many of these other boards may not work (due lack of exposed gpio)
     options=(
         'BTT MMB v1.0 (with CANbus)'
         'BTT MMB v1.1 (with CANbus)'
