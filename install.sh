@@ -867,7 +867,7 @@ copy_config_files() {
         fi
 
         # Hardware files: Special token substitution -----------------------------------------
-	if [ "${file}" == "mmu.cfg" -o "${file}" == "mmu_hardware.cfg" ]; then
+	    if [ "${file}" == "mmu.cfg" -o "${file}" == "mmu_hardware.cfg" ]; then
             cp ${src} ${dest}
 
             # Correct shared uart_address for EASY-BRD
@@ -943,11 +943,11 @@ copy_config_files() {
                     " > ${dest}.tmp && mv ${dest}.tmp ${dest}
 
             # Handle LED option - Comment out if disabled
-	    if [ "${file}" == "mmu_hardware.cfg" -a "$SETUP_LED" -eq 0 ]; then
+	        if [ "${file}" == "mmu_hardware.cfg" -a "$SETUP_LED" -eq 0 ]; then
                 sed "/${LED_SECTION}/,\$s/^/#/" ${dest} > ${dest}.tmp && mv ${dest}.tmp ${dest}
             fi
 
-        # Conifguration parameters -----------------------------------------------------------
+        # Configuration parameters -----------------------------------------------------------
         elif [ "${file}" == "mmu_parameters.cfg" ]; then
             update_copy_file "$src" "$dest" "" "_param_"
 
@@ -1009,7 +1009,7 @@ copy_config_files() {
         # Everything else is read-only symlink ------------------------------------------------
         else
             ln -sf ${src} ${dest}
-	fi
+	    fi
     done
 
     # Handle deprecated files -----------------------------------------------------------------
